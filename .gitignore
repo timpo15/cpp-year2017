@@ -1,0 +1,4 @@
+/assembler/*
+!/assembler/*.asm
+!/assembler/CMakeLists.txt
+
