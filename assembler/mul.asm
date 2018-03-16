@@ -5,6 +5,7 @@ _start:
 
                 sub             rsp, 2 * 128 * 8
                 lea             rdi, [rsp + 128 * 8]
+				
                 mov             rcx, 128
                 call            read_long
 
@@ -47,7 +48,7 @@ mul_long_long:
                 push            r11        ;answer
                 clc
                 mov             r9, rcx
-                mov             r12, rsi
+                
 .loop1:
                 mov             r10, rcx
                 xor             r8, r8
