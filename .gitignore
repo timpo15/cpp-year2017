@@ -1,9 +1,9 @@
-
+/**
 !/assembler/*.asm
 !/assembler/CMakeLists.txt
 
-bigint/**
+!bigint/gtest/**
 !bigint/CMakeLists.txt
 !bigint/*.cpp
 !bigint/*.h
-!bigint/gtest/**
+
