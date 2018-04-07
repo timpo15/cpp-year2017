@@ -4,9 +4,10 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
+#include <limits>
 
-const ui MAX_DIGIT = UINT32_MAX;
-const ui BASE = sizeof(UINT_MAX) * 8;
+const ui MAX_DIGIT = std::numeric_limits<ui>::max();
+const ui BASE = sizeof(ui) * 8;
 
 void big_integer::ensure_capacity() {
     while (data.size() > 1 && ((sign && data[data.size() - 1] == 0) || (!sign && data[data.size() - 1] == MAX_DIGIT))) {
@@ -139,7 +140,7 @@ big_integer big_integer::dec() const {
     ans.push_back(sign ? 0 : MAX_DIGIT);
     ui min = 1;
     ull carry = 0, now = 0;
-    for (int i = 0; i < size(); i++) {
+    for (size_t i = 0; i < size(); i++) {
         now = ull(get_real(i)) + carry + min;
         ans[i] = static_cast<ui>(now);
         min = 0;
@@ -318,7 +319,7 @@ big_integer operator/(big_integer a, big_integer const &b) {
 //    ui normal = MAX_DIGIT / 1000;
     ui normal = 1;
     if (r.data.back() < (MAX_DIGIT / 2)) {
-        normal = 1 + static_cast<ui>((static_cast<ull>(MAX_DIGIT) + 1) / 2 / (static_cast<ull>(r.data.back()) + 1));
+        normal = 1 + static_cast<ui>((static_cast<ull>(MAX_DIGIT) + 1) / 2 /     (static_cast<ull>(r.data.back()) + 1));
     }
 //    std::cout << normal;
 //    ui normal = 1000;
@@ -371,7 +372,6 @@ big_integer operator%(big_integer a, big_integer const &b) {
 big_integer operator&(big_integer a, big_integer const &b) {
     size_t min = a.size() > b.size() ? b.size() : a.size();
     size_t max = a.size() > b.size() ? a.size() : b.size();
-    ull sum = 0, carry = 0;
     std::vector<ui> temp(max);
     for (size_t i = 0; i < min; i++) {
         temp[i] = a.get_real(i) & b.get_real(i);
@@ -385,7 +385,6 @@ big_integer operator&(big_integer a, big_integer const &b) {
 big_integer operator|(big_integer a, big_integer const &b) {
     size_t min = a.size() > b.size() ? b.size() : a.size();
     size_t max = a.size() > b.size() ? a.size() : b.size();
-    ull sum = 0, carry = 0;
     std::vector<ui> temp(max);
     for (size_t i = 0; i < min; i++) {
         temp[i] = a.get_real(i) | b.get_real(i);
@@ -400,7 +399,6 @@ big_integer operator|(big_integer a, big_integer const &b) {
 big_integer operator^(big_integer a, big_integer const &b) {
     size_t min = a.size() > b.size() ? b.size() : a.size();
     size_t max = a.size() > b.size() ? a.size() : b.size();
-    ull sum = 0, carry = 0;
     std::vector<ui> temp(max);
     for (size_t i = 0; i < min; i++) {
         temp[i] = a.get_real(i) ^ b.get_real(i);
@@ -475,13 +473,13 @@ bool operator<(big_integer const &a, big_integer const &b) {
     if (a.size() != b.size()) {
         return a.size() < b.size();
     }
-    big_integer t1(a), t2(b);
-    t1.ensure_capacity();
-    t2.ensure_capacity();
-    for (size_t i = t1.size(); i > 0; i--) {
-        if (t1.get_real(i - 1) != t2.get_real(i - 1)) {
+//    big_integer t1(a), t2(b);
+//    t1.ensure_capacity();
+//    t2.ensure_capacity();
+    for (size_t i = a.size(); i > 0; i--) {
+        if (a.get_real(i - 1) != b.get_real(i - 1)) {
 
-            return t1.get_real(i - 1) < t2.get_real(i - 1);
+            return a.get_real(i - 1) < b.get_real(i - 1);
         }
     }
     return false;
@@ -528,3 +526,4 @@ std::string to_string(big_integer const &a) {
 std::ostream &operator<<(std::ostream &s, big_integer const &a) {
     return s << to_string(a);
 }
+
