@@ -2,7 +2,7 @@
 #define BIG_INTEGER_H
 
 #include <cstddef>
-#include <gmp.h>
+
 #include <iosfwd>
 #include <vector>
 
