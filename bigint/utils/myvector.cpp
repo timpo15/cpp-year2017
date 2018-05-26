@@ -5,13 +5,8 @@
 #include <algorithm>
 
 
-//#define myvector myvector
-//#define myarray myarray
-
 typedef unsigned int ui;
 
-//using myvector = myvector;
-//typedef myvector myvector;
 
 myvector::myarray *myvector::myarray::constr_myarray(ui size) {
     void *p = operator new((size) * (sizeof(ui) + 1));
@@ -93,15 +88,11 @@ ui &myvector::back() {
 }
 
 
-
 void myvector::push_back(ui x) {
     if (length > smallLen) {
         if (length == long_object.capacity) {
             move(long_object.capacity * 2);
         }
-//        if (long_object.location->refCount != 1) {
-//            move(std::max(0u, 10 - long_object.capacity + length) + long_object.capacity);
-//        }
         long_object.location->data[length] = x;
     } else if (length < smallLen) {
         small_object[length] = x;
@@ -139,7 +130,7 @@ void myvector::resize(ui new_size, ui elem) {
 
 void myvector::move(ui new_size) {
     if (new_size <= smallLen) {
-            if (length > smallLen) {
+        if (length > smallLen) {
             myarray *tmp = long_object.location;
             memcpy(small_object, long_object.location->data, smallLen * sizeof(ui));
             myarray::unLogin(tmp);
@@ -148,7 +139,7 @@ void myvector::move(ui new_size) {
     } else {
         myarray *new_data = myarray::constr_myarray(new_size);
         memcpy(new_data->data, realPtr, std::min(length, new_size) * sizeof(ui));
-        if (length> smallLen) myarray::unLogin(long_object.location);
+        if (length > smallLen) myarray::unLogin(long_object.location);
         long_object.location = myarray::login(new_data);
         long_object.capacity = new_size;
         realPtr = long_object.location->data;
