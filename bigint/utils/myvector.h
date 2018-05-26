@@ -1,8 +1,8 @@
 #ifndef BIGINT_MYVECTOR_H
 #define BIGINT_MYVECTOR_H
 
-#include <cstddef>
 #include <cstring>
+#include <cstddef>
 
 typedef unsigned int ui;
 
@@ -16,7 +16,6 @@ public:
     myvector(const myvector &other) noexcept;
 
     myvector &operator=(myvector const &other) noexcept;
-
 
     ~myvector();
 
@@ -86,4 +85,5 @@ private:
         ui small_object[smallLen];
     };
 };
+
 #endif // BIGINT_MYVECTOR_H
