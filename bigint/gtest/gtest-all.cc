@@ -4938,7 +4938,7 @@ void StreamingListener::SocketWriter::MakeConnection() {
                         << gai_strerror(error_num);
   }
 
-  // Loop through all the results and connect to the first we can.
+  // Loop through all the results and login to the first we can.
   for (addrinfo* cur_addr = servinfo; sockfd_ == -1 && cur_addr != NULL;
        cur_addr = cur_addr->ai_next) {
     sockfd_ = socket(
@@ -4955,7 +4955,7 @@ void StreamingListener::SocketWriter::MakeConnection() {
   freeaddrinfo(servinfo);  // all done with this structure
 
   if (sockfd_ == -1) {
-    GTEST_LOG_(WARNING) << "stream_result_to: failed to connect to "
+    GTEST_LOG_(WARNING) << "stream_result_to: failed to login to "
                         << host_name_ << ":" << port_num_;
   }
 }

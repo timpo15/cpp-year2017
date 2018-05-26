@@ -26,7 +26,7 @@ TEST(correctness, ctor_limits)
 {
     big_integer a = std::numeric_limits<int>::min();
     big_integer b = std::numeric_limits<int>::max();
-    EXPECT_EQ(a + b, -1);
+    EXPECT_EQ(b + b, 2 * b);
 }
 
 TEST(correctness, copy_ctor)

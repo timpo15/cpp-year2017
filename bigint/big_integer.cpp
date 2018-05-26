@@ -7,7 +7,6 @@
 #include <limits>
 
 const ui MAX_DIGIT = std::numeric_limits<ui>::max();
-const ui BASE = sizeof(ui) * 8;
 
 void big_integer::ensure_capacity() {
     while (data.size() > 1 && ((sign && data[data.size() - 1] == 0) || (!sign && data[data.size() - 1] == MAX_DIGIT))) {
@@ -54,7 +53,7 @@ big_integer::big_integer(int a) : data(1), sign(a >= 0) {
 
 }
 
-big_integer::big_integer(std::vector<ui> const &data2, bool sign2) : data(data2), sign(sign2) {
+big_integer::big_integer(myvector const &data2, bool sign2) : data(data2), sign(sign2) {
 }
 
 big_integer::big_integer(std::string const &str) {
@@ -136,7 +135,7 @@ big_integer big_integer::operator+() const {
 }
 
 big_integer big_integer::dec() const {
-    std::vector<ui> ans(size());
+    myvector ans(size());
     ans.push_back(sign ? 0 : MAX_DIGIT);
     ui min = 1;
     ull carry = 0, now = 0;
@@ -162,7 +161,7 @@ big_integer big_integer::operator-() const {
 }
 
 big_integer big_integer::operator~() const {
-    std::vector<ui> temp(data.size());
+    myvector temp(data.size());
     for (size_t i = 0; i < data.size(); i++) {
         temp[i] = ~data[i];
     }
@@ -206,7 +205,7 @@ big_integer operator+(big_integer a, big_integer const &b) {
         }
     }
     ull sum = 0, carry = 0;
-    std::vector<ui> temp(max);
+    myvector temp(max);
     temp.push_back(f ? 0 : MAX_DIGIT);
     for (size_t i = 0; i < min; i++) {
         sum = (carry + a.get_real(i)) + tmp.get_real(i);
@@ -230,7 +229,7 @@ big_integer operator-(big_integer a, big_integer const &b) {
     return a + (-b);
 }
 
-void mul_vector(std::vector<ui> &temp, std::vector<ui> a, std::vector<ui> b) {
+void mul_vector(myvector &temp, myvector a, myvector b) {
     for (size_t i = 0; i < a.size(); i++) {
         ull carry = 0, mul = 0, per = 0;
         for (size_t j = 0; j < b.size(); j++) {
@@ -260,7 +259,7 @@ void big_integer::norma() {
 big_integer operator*(big_integer a, big_integer const &b) {
     bool sign = (b.sign ^ a.sign);
     big_integer temp1(a.abs()), temp2(b.abs());
-    std::vector<ui> temp(a.size() + b.size());
+    myvector temp(a.size() + b.size());
     temp.push_back(!sign ? 0 : MAX_DIGIT);
     mul_vector(temp, temp1.data, temp2.data);
     big_integer ans(temp, !sign);
@@ -279,7 +278,7 @@ ui get_estimate(ui const &a, ui const &b, ui const &c) {
     return static_cast<ui>(temp);
 }
 
-bool test_vectors(std::vector<ui> const &a, std::vector<ui> const &b) {
+bool test_vectors(myvector const &a, myvector const &b) {
     for (size_t i = 1; i <= a.size(); i++) {
         if (a[a.size() - i] != b[a.size() - i]) {
             return a[a.size() - i] < b[a.size() - i];
@@ -288,12 +287,12 @@ bool test_vectors(std::vector<ui> const &a, std::vector<ui> const &b) {
     return false;
 }
 
-void mul_vectors(std::vector<ui> &a, std::vector<ui> const &b, ui const &estim) {
+void mul_vectors(myvector &a, myvector const &b, ui const &estim) {
     ull carry = 0, mul = 0;
     ull tmp = 0;
     a.resize(b.size() + 1);
     for (size_t i = 0; i < b.size(); i++) {
-        mul = ull(b.data()[i]) * estim;
+        mul = ull(b[i]) * estim;
         tmp = (mul & MAX_DIGIT) + carry;
         a[i] = static_cast<ui>(tmp);
         carry = (tmp >> BASE) + (mul >> BASE);
@@ -301,7 +300,7 @@ void mul_vectors(std::vector<ui> &a, std::vector<ui> const &b, ui const &estim) 
     a[b.size()] = static_cast<ui>(carry);
 }
 
-void sub_vectors(std::vector<ui> &a, std::vector<ui> const &b) {
+void sub_vectors(myvector  &a, myvector const &b) {
     ull sub = 0, carry = 1;
     for (size_t i = 0; i < b.size(); i++) {
         sub = static_cast<ull>(a[i]) + static_cast<ull>(~b[i]) + carry;
@@ -316,13 +315,10 @@ big_integer operator/(big_integer a, big_integer const &b) {
     if (l < r) {
         return 0;
     }
-//    ui normal = MAX_DIGIT / 1000;
     ui normal = 1;
     if (r.data.back() < (MAX_DIGIT / 2)) {
         normal = 1 + static_cast<ui>((static_cast<ull>(MAX_DIGIT) + 1) / 2 /     (static_cast<ull>(r.data.back()) + 1));
     }
-//    std::cout << normal;
-//    ui normal = 1000;
     l *= normal;
     r *= normal;
     l.ensure_capacity();
@@ -330,7 +326,7 @@ big_integer operator/(big_integer a, big_integer const &b) {
 
     l.ensure_capacity();
     r.ensure_capacity();
-    std::vector<ui> ans(l.size() - r.size() + 1), ltemp(r.size() + 1), rtemp(r.size() + 1, 0);
+    myvector ans(l.size() - r.size() + 1), ltemp(r.size() + 1), rtemp(r.size() + 1, 0);
     for (size_t i = 0; i < r.size(); i++) {
         ltemp[i] = l.get_real(l.size() + i - r.size());
     }
@@ -370,44 +366,17 @@ big_integer operator%(big_integer a, big_integer const &b) {
 }
 
 big_integer operator&(big_integer a, big_integer const &b) {
-    size_t min = a.size() > b.size() ? b.size() : a.size();
-    size_t max = a.size() > b.size() ? a.size() : b.size();
-    std::vector<ui> temp(max);
-    for (size_t i = 0; i < min; i++) {
-        temp[i] = a.get_real(i) & b.get_real(i);
-    }
-    for (size_t i = min; i < max; i++) {
-        temp[i] = a.get_digit(i) & b.get_digit(i);
-    }
-    return big_integer(temp, !(temp.back() & (1 << (BASE - 1))));
+    return apply_operator(a, b, std::bit_and<ui>());
 }
 
+
 big_integer operator|(big_integer a, big_integer const &b) {
-    size_t min = a.size() > b.size() ? b.size() : a.size();
-    size_t max = a.size() > b.size() ? a.size() : b.size();
-    std::vector<ui> temp(max);
-    for (size_t i = 0; i < min; i++) {
-        temp[i] = a.get_real(i) | b.get_real(i);
-    }
-    for (size_t i = min; i < max; i++) {
-        temp[i] = a.get_digit(i) | b.get_digit(i);
-    }
-    return big_integer(temp, !(temp.back() & (1 << (BASE - 1))));
+    return apply_operator(a, b, std::bit_or<ui>());
 }
 
 
 big_integer operator^(big_integer a, big_integer const &b) {
-    size_t min = a.size() > b.size() ? b.size() : a.size();
-    size_t max = a.size() > b.size() ? a.size() : b.size();
-    std::vector<ui> temp(max);
-    for (size_t i = 0; i < min; i++) {
-        temp[i] = a.get_real(i) ^ b.get_real(i);
-    }
-    for (size_t i = min; i < max; i++) {
-        temp[i] = a.get_digit(i) ^ b.get_digit(i);
-    }
-    return big_integer(temp, !(temp.back() & (1 << (BASE - 1))));
-
+    return apply_operator(a, b, std::bit_xor<ui>());
 }
 
 big_integer operator<<(big_integer a, ui b) {
@@ -416,7 +385,7 @@ big_integer operator<<(big_integer a, ui b) {
     }
     size_t added = b >> 5;
     size_t inner = b & (BASE - 1);
-    std::vector<ui> temp(a.size() + added + 1);
+    myvector temp(a.size() + added + 1);
     temp[added] = static_cast<ui>(a.get_real(added) << inner);
     for (size_t i = added + 1; i < a.size() + added + 1; i++) {
         ull r = ull(a.get_real(i - added - 1)) >> (BASE - inner);
@@ -433,7 +402,7 @@ big_integer operator>>(big_integer a, int b) {
     size_t added = b >> 5;
     size_t inner = b & (BASE - 1);
     size_t newsize = a.size() - added > 0 ? a.size() - added : 0;
-    std::vector<ui> temp(newsize);
+    myvector temp(newsize);
     for (size_t i = 0; i < newsize; i++) {
         ull r = ull(a.get_digit(i - added + 1)) << (BASE - inner);
         ull l = ull(a.get_real(i - added)) >> inner;
