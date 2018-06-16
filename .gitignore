@@ -8,3 +8,5 @@
 !bigint/*.h
 !bigint/utils
 !bigint/utils/*
+!HuffmanCompress
+!HuffmanCompress/**

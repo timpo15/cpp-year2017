@@ -33,6 +33,7 @@ public:
 
 
     ui &operator[](ui index) {
+//        move(length);
         return realPtr[index];
     };
 
