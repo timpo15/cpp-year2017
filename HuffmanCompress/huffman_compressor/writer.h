@@ -8,6 +8,7 @@
 
 class writer {
     static const size_t BUFF_SIZE = 128;
+    static const size_t BYTE = 8;
     std::ostream &out;
     size_t pos = 0;
     size_t shift = 0;
@@ -24,14 +25,22 @@ class writer {
 
 public:
     static size_t writed;
+
     explicit writer(std::ostream &out) : out(out), buffer(new uint8_t[BUFF_SIZE]) {
         std::fill(buffer, buffer + BUFF_SIZE, 0);
+    }
+
+    ~writer() {
+        auto *char_pointer = reinterpret_cast<char *>(buffer);
+        out.write(char_pointer, pos);
+        out.flush();
+        delete[] buffer;
     }
 
     void write_bit(bool bit) {
         buffer[pos] |= bit << shift;
         shift++;
-        if (shift >= 8) {
+        if (shift >= BYTE) {
             inc_pos();
             shift = 0;
         }
@@ -41,20 +50,21 @@ public:
         buffer[pos] = byte;
         inc_pos();
     }
-    template <typename T>
+
+    template<typename T>
     void write(T val) {
         for (size_t i = 0; i < sizeof(T); ++i) {
-            write_byte(val >> (8 * i));
+            write_byte(val >> (BYTE * i));
         }
     }
 
     void write(bit_view bits) {
-        size_t some_place = 8 - shift;
+        size_t some_place = BYTE - shift;
         while (bits.length >= some_place) {
             buffer[pos] |= bits.code << shift;
             bits.length -= some_place;
             bits.code >>= some_place;
-            some_place = 8;
+            some_place = BYTE;
             shift = 0;
             inc_pos();
         }
@@ -68,18 +78,12 @@ public:
             shift = 0;
         }
     }
+
     void flush() {
         auto *char_pointer = reinterpret_cast<char *>(buffer);
         out.write(char_pointer, pos);
         std::fill(buffer, buffer + BUFF_SIZE, 0);
         pos = 0;
-    }
-
-    ~writer() {
-        auto *char_pointer = reinterpret_cast<char *>(buffer);
-        out.write(char_pointer, pos);
-        out.flush();
-        delete[] buffer;
     }
 
 

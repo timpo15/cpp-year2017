@@ -45,26 +45,8 @@ public:
         delete[] buffer;
     }
 
-    uint8_t readByte() {
-        uint8_t ans = buffer[pos];
-        nextSymbol();
-        return ans;
-    }
-
-    uint16_t read_size() {
-        uint16_t ans = readByte();
-        ans += (readByte() << 8);
-        return ans;
-    }
-
     bool hasNext() {
         return pos != end_pos;
-    }
-
-    void resetToStart() {
-        input.clear();
-        input.seekg(start);
-        update_buffer();
     }
 
     bool read_bit() {
@@ -78,6 +60,26 @@ public:
         return res;
     }
 
+    uint8_t readByte() {
+        uint8_t ans = buffer[pos];
+        nextSymbol();
+        return ans;
+    }
+
+    uint16_t read_size() {
+        uint16_t ans = readByte();
+        ans += (readByte() << BYTE);
+        return ans;
+    }
+
+    uint64_t read_sizet() {
+        uint64_t ans = 0;
+        for (size_t i = 0; i < BYTE; i++) {
+            ans += (readByte() << (8 * i));
+        }
+        return ans;
+    }
+
     void fix_buff() {
         if (shift != 0) {
             shift = 0;
@@ -85,12 +87,10 @@ public:
         }
     }
 
-    uint64_t read_sizet() {
-        uint64_t ans = 0;
-        for (size_t i = 0; i < 8; i++) {
-            ans += (readByte() << (8 * i));
-        }
-        return ans;
+    void resetToStart() {
+        input.clear();
+        input.seekg(start);
+        update_buffer();
     }
 };
 

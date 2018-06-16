@@ -14,16 +14,21 @@ void print_help() {
 
 int main(int argc, const char **argv) {
 
-
     clock_t start_time;
     clock_t finish_time;
+
     bool quiet = false,
             extract = false,
             compress = false,
             help = false;
+
     std::ifstream input;
     std::ofstream output;
-    std::function<void(double)> handler = [](double progress){std::printf("Progress: %4.2f% \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b", progress);std::cout.flush();};
+
+    std::function<void(double)> handler = [](double progress) {
+        std::printf("Progress: %4.2f% \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b", progress);
+        std::cout.flush();
+    };
 
 
     try {
@@ -49,6 +54,9 @@ int main(int argc, const char **argv) {
         }
         if (option.find('c') != std::string::npos) {
             compress = true;
+        }
+        if (option.find('h') != std::string::npos) {
+            help = true;
         }
         if (option.find('h') != std::string::npos) {
             help = true;
@@ -79,10 +87,10 @@ int main(int argc, const char **argv) {
             finish_time = clock();
         }
         if (!quiet) {
-            double time = ((finish_time - start_time) * 1.0 / CLOCKS_PER_SEC );
+            double time = ((finish_time - start_time) * 1.0 / CLOCKS_PER_SEC);
             std::cout << "Successful!                   \n";
             std::cout << "Stats:\n";
-            std::cout << "\tTime: " << time  << "s\n";
+            std::cout << "\tTime: " << time << "s\n";
             std::cout << "\tOriginal size: " << t.first * 1.0 / 1000 << " Mb\n";
             std::cout << "\tCompressed size: " << t.second * 1.0 / 1000 << " Mb\n";
             std::cout << "\tCompress rate: " << t.first * 1.0 / t.second << "\n";

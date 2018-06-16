@@ -19,26 +19,33 @@ huffman_processor::huffman_processor() {
 std::pair<size_t, size_t> huffman_processor::encode(std::istream &input_stream,
                                                     std::ostream &output_stream,
                                                     std::function<void(double)> handler) {
+
     reader input(input_stream);
+
     if (input.start == -1) {
         throw std::runtime_error("Input file not found");
     }
+
     writer output(output_stream);
     size_t message_size = 0;
+
     while (input.hasNext()) {
         uint8_t readByte = input.readByte();
         ++frequency[readByte];
         ++message_size;
     }
+
     Huffman_tree tree = build_tree(frequency);
     shifr.resize(WORD_COUNT);
     if (tree.root != NULL_IND) {
         generate_shifr(tree, tree.root, bit_view());
     }
+
+    size_t readed = reader::readed;
     tree.print(output);
     output.write(message_size);
-    size_t readed = reader::readed;
     input.resetToStart();
+
     size_t mod = message_size / 1000;
     size_t rest = 0;
     if (mod > 0) {
@@ -62,10 +69,15 @@ std::pair<size_t, size_t> huffman_processor::encode(std::istream &input_stream,
             output.write(bits);
         }
     }
-    size_t writed = output.writed;
+
+    size_t writed = writer::writed;
     output.fix_buff();
     output.flush();
     return {readed, writed};
+}
+
+std::pair<size_t, size_t> huffman_processor::encode(std::istream &input_stream, std::ostream &output_stream) {
+    return encode(input_stream, output_stream, [](double a) { return; });
 }
 
 huffman_processor::Huffman_tree huffman_processor::build_tree(size_t frequency[]) {
@@ -134,7 +146,7 @@ std::pair<size_t, size_t> huffman_processor::decode(std::istream &input_stream,
         for (size_t j = 0; j < rest; ++j) {
             output.write_byte(tree.getNextWord(input));
         }
-    }else {
+    } else {
         for (size_t j = 0; j < message_size; ++j) {
             output.write_byte(tree.getNextWord(input));
         }
@@ -145,9 +157,6 @@ std::pair<size_t, size_t> huffman_processor::decode(std::istream &input_stream,
     return {readed, writed};
 }
 
-std::pair<size_t, size_t> huffman_processor::encode(std::istream &input_stream, std::ostream &output_stream) {
-    return encode(input_stream, output_stream, [](double a) { return; });
-}
 
 std::pair<size_t, size_t> huffman_processor::decode(std::istream &input_stream, std::ostream &output_stream) {
     return decode(input_stream, output_stream, [](double a) { return; });
@@ -215,7 +224,6 @@ void huffman_processor::Huffman_tree::dfs_build(size_t &free_ind,
                                                 std::vector<bool> &path,
                                                 std::vector<uint8_t> &words) {
     if (!path[path_pos]) {
-//        tree[ind].left = free_ind;
         tree[ind].nodes[0] = free_ind;
         tree[free_ind] = Node(free_ind);
         free_ind++;
@@ -224,7 +232,6 @@ void huffman_processor::Huffman_tree::dfs_build(size_t &free_ind,
             throw std::runtime_error("File Damaged");
         }
         dfs_build(free_ind, tree[ind].nodes[0], path_pos, words_pos, path, words);
-//        tree[ind].right = free_ind;
         tree[ind].nodes[1] = free_ind;
         tree[free_ind] = Node(free_ind);
         if (path_pos > path.size() || path[path_pos]) {
