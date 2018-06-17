@@ -28,12 +28,13 @@ std::pair<size_t, size_t> huffman_processor::encode(std::istream &input_stream,
 
     writer output(output_stream);
     size_t message_size = 0;
-
+//88280
     while (input.hasNext()) {
         uint8_t readByte = input.readByte();
         ++frequency[readByte];
         ++message_size;
     }
+    std::cout << "!23";
 
     Huffman_tree tree = build_tree(frequency);
     shifr.resize(WORD_COUNT);
@@ -44,12 +45,13 @@ std::pair<size_t, size_t> huffman_processor::encode(std::istream &input_stream,
     size_t readed = reader::readed;
     tree.print(output);
     output.write(message_size);
+
     input.resetToStart();
 
     size_t mod = message_size / 1000;
     size_t rest = 0;
     if (mod > 0) {
-        rest = message_size % (mod);
+        rest = message_size % 1000;
 
         size_t mod_i = mod * 100;
         for (size_t i = 0; i < 1000; ++i) {
@@ -130,25 +132,31 @@ std::pair<size_t, size_t> huffman_processor::decode(std::istream &input_stream,
     writer output(output_stream);
     Huffman_tree tree;
     tree.build(input);
+    size_t readeeed = 0;
     size_t message_size = input.read_sizet();
     size_t mod = message_size / 1000;
     size_t rest = 0;
     if (mod > 0) {
-        rest = message_size % (mod);
+        rest = message_size % 1000;
 
         size_t mod_i = mod * 100;
         for (size_t i = 0; i < 1000; ++i) {
             for (size_t j = 0; j < mod; ++j) {
                 output.write_byte(tree.getNextWord(input));
+                ++readeeed;
             }
             handler(i * mod_i / message_size);
         }
         for (size_t j = 0; j < rest; ++j) {
             output.write_byte(tree.getNextWord(input));
+            ++readeeed;
+
         }
     } else {
         for (size_t j = 0; j < message_size; ++j) {
             output.write_byte(tree.getNextWord(input));
+            ++readeeed;
+
         }
     }
     handler(100);
@@ -174,6 +182,7 @@ void huffman_processor::Huffman_tree::print(writer &out) {
     for (bool bit: path) {
         out.write_bit(bit);
     }
+    //1021 256 00000001
     out.fix_buff();
     for (uint8_t byte : words) {
         out.write_byte(byte);

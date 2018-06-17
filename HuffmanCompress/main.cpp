@@ -79,7 +79,10 @@ int main(int argc, const char **argv) {
         }
         huffman_processor huffmanProcessor;
         input = std::ifstream(argv[2], std::ifstream::binary);
+//        input.exceptions(std::ifstream::failbit);
         output = std::ofstream(argv[3], std::ifstream::binary);
+//        output.exceptions(std::ofstream::failbit);
+
         std::pair<size_t, size_t> t;
         if (compress) {
             start_time = clock();

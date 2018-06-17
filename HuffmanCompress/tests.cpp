@@ -30,6 +30,23 @@ TEST(correctness, file_not_found) {
 
 TEST(correctness, empty_file) {
     std::string test_string = "";
+
+    std::stringstream in(test_string);
+    std::stringstream out;
+    std::stringstream out2;
+    huffman_processor huffmanProcessor;
+    huffmanProcessor.encode(in, out);
+    std::stringstream in2(out.str());
+    huffmanProcessor.decode(in2, out2);
+    EXPECT_EQ(test_string, out2.str());
+}
+TEST(correctness, all_chars) {
+    std::string test_string = "";
+    for (int i = 0; i > 10000; ++i) {
+        for (int i = 0; i < 256; i++) {
+            test_string.push_back((i));
+        }
+    }
     std::stringstream in(test_string);
     std::stringstream out;
     std::stringstream out2;
