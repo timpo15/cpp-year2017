@@ -13,14 +13,11 @@ void print_help() {
 }
 
 int main(int argc, const char **argv) {
-    if (argc == 1 ) {
+    if (argc == 1 || argc == 3 ) {
         print_help();
         return 0;
     }
-    if (argc == 3) {
-        print_help();
-        return 0;
-    }
+    
     clock_t start_time;
     clock_t finish_time;
 
@@ -82,13 +79,17 @@ int main(int argc, const char **argv) {
         std::pair<size_t, size_t> t;
         if (compress) {
             start_time = clock();
-
             t = huffmanProcessor.encode(input, output, handler);
             finish_time = clock();
-        } else {
+        } if (extract){
             start_time = clock();
             t = huffmanProcessor.decode(input, output, handler);
             finish_time = clock();
+        } else {
+            print_help();
+            input.close();
+            output.close();
+            return 0;
         }
         if (!quiet) {
             double time = ((finish_time - start_time) * 1.0 / CLOCKS_PER_SEC);
