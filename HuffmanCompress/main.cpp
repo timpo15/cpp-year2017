@@ -17,7 +17,7 @@ int main(int argc, const char **argv) {
         print_help();
         return 0;
     }
-    
+
     clock_t start_time;
     clock_t finish_time;
 
@@ -39,6 +39,10 @@ int main(int argc, const char **argv) {
         size_t tire_count = 0;
         size_t pos = 0;
         std::string option;
+        if (argv[1][0] != '-') {
+            print_help();
+            return 0;
+        }
         while (pos < std::strlen(argv[1])) {
             if (argv[1][pos] == '-') {
                 pos++;
