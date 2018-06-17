@@ -100,8 +100,8 @@ int main(int argc, const char **argv) {
             std::cout << "Successful!                   \n";
             std::cout << "Stats:\n";
             std::cout << "\tTime: " << time << "s\n";
-            std::cout << "\tOriginal size: " << t.first * 1.0 / 1000 << " Mb\n";
-            std::cout << "\tCompressed size: " << t.second * 1.0 / 1000 << " Mb\n";
+            std::cout << "\tOriginal size: " << t.first * 1.0 / 1000 / 1000 << " Mb\n";
+            std::cout << "\tCompressed size: " << t.second * 1.0 / 1000 /1000 << " Mb\n";
             std::cout << "\tCompress rate: " << t.first * 1.0 / t.second << "\n";
             std::cout << "\tAverage speed: " << (t.first / time) / 1000 / 1000 << " [Mb/s]\n";
         }
