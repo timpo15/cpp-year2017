@@ -17,6 +17,10 @@ int main(int argc, const char **argv) {
         print_help();
         return 0;
     }
+    if (argc == 3) {
+        print_help();
+        return 0;
+    }
     clock_t start_time;
     clock_t finish_time;
 
