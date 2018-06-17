@@ -15,6 +15,7 @@ void print_help() {
 int main(int argc, const char **argv) {
     if (argc == 1 ) {
         print_help();
+        return 0;
     }
     clock_t start_time;
     clock_t finish_time;
@@ -67,10 +68,7 @@ int main(int argc, const char **argv) {
             print_help();
             return 0;
         }
-        if (argc == 1) {
-            print_help();
-            return 0;
-        }
+
         if (compress & extract) {
             std::cerr << "Wrong combination of options" << "\n";
         }
