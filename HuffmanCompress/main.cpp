@@ -85,7 +85,7 @@ int main(int argc, const char **argv) {
             start_time = clock();
             t = huffmanProcessor.encode(input, output, handler);
             finish_time = clock();
-        } if (extract){
+        } else if (extract){
             start_time = clock();
             t = huffmanProcessor.decode(input, output, handler);
             finish_time = clock();
